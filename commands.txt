@@ -1,0 +1,16 @@
+# BACKEND
+cd backend
+source venv/bin/activate
+venv/bin/uvicorn main:app --reload
+
+# FRONTEND (new terminal)
+cd frontend
+npm run dev
+
+# SEED DB (only if needed / first time)
+cd backend
+source venv/bin/activate
+python seed.py
+
+# IF PORT 8000 ALREADY IN USE
+lsof -ti:8000 | xargs kill -9

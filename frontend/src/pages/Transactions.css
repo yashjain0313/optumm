@@ -1,0 +1,64 @@
+.transactions-page .page-head h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.transactions-page .page-head p {
+  font-size: 0.8125rem;
+  color: #667085;
+  margin-bottom: 1.25rem;
+}
+
+.table-wrap {
+  background: #fff;
+  border: 1px solid #e4e7ec;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 0.625rem 1rem;
+  background: #f9fafb;
+  color: #667085;
+  font-weight: 500;
+  border-bottom: 1px solid #e4e7ec;
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid #f2f4f7;
+  color: #344054;
+}
+
+.data-table tbody tr:hover {
+  background: #fafbfc;
+}
+
+.mono {
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+
+.debit { color: #101828; font-weight: 500; }
+.credit { color: #067647; font-weight: 500; }
+
+.badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-completed { background: #ecfdf3; color: #067647; }
+.badge-processed { background: #eff8ff; color: #175cd3; }

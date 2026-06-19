@@ -1,0 +1,118 @@
+===================================================
+  OPTUM MEMBER BENEFITS WALLET — PROJECT BREAKDOWN
+===================================================
+
+WHAT IT DOES
+------------
+A personal healthcare benefits portal where employees log in
+with their SAP ID + password and see their own:
+
+  - HSA / FSA balances (Health Savings & Flexible Spending Accounts)
+  - Deductible progress (how much they've paid vs. their annual limit)
+  - Copay rates (primary care, specialist, urgent care, prescriptions)
+  - Transaction history (past medical payments)
+  - IRS 2026 rulebook (legal contribution limits, plan rules)
+  - Pay copay directly from HSA or FSA wallet
+
+Each employee sees ONLY their own data. Fully authenticated.
+
+
+HOW IT WORKS (TECH STACK)
+--------------------------
+BACKEND  →  FastAPI (Python) + PostgreSQL (Neon cloud DB)
+FRONTEND →  React (Vite) → communicates via /api proxy
+
+  Login Flow:
+  1. Employee enters SAP ID + password on login page
+  2. Backend verifies against DB (bcrypt hashed password)
+  3. Returns a JWT token
+  4. Frontend stores token, uses it for every API call
+
+  API Endpoints:
+  POST /api/auth/login       → get JWT token
+  GET  /api/member           → name, plan, employer, age
+  GET  /api/wallet           → HSA/FSA balances + IRS limits
+  GET  /api/benefits         → deductible, OOP max, copay rates
+  GET  /api/transactions     → payment history
+  GET  /api/rules            → full IRS 2026 rulebook
+  POST /api/wallet/pay-copay → deduct from HSA or FSA
+
+  Database (NeonDB - PostgreSQL):
+  employees   → SAP ID, hashed password, name, plan, age
+  wallets     → HSA/FSA balances, contributions YTD
+  benefits    → deductible, out-of-pocket max, copay rates
+  transactions → payment history per employee
+
+
+HEALTHCARE INDUSTRY RELEVANCE
+------------------------------
+Problem it solves:
+  Employees don't understand their benefits. They don't know:
+  - How much is left in their HSA/FSA
+  - Whether they've hit their deductible
+  - How much a copay will actually cost them
+  - What the IRS rules say about their plan
+
+This portal solves exactly that.
+
+Key talking points for presentation:
+
+1. COST TRANSPARENCY
+   Members can see real-time balances and copay rates before
+   visiting a doctor. Reduces surprise billing shock.
+
+2. HSA/FSA COMPLIANCE
+   App enforces IRS 2026 limits (HSA: $4,400 self / $8,750 family).
+   Prevents employees from over-contributing and getting penalized.
+
+3. DEDUCTIBLE TRACKING
+   Shows deductible met vs. remaining — employees know exactly
+   when insurance starts paying more. Drives smarter utilization.
+
+4. EMPLOYER INTEGRATION
+   Employer seed contributions, match rules, and open enrollment
+   windows are all encoded — mirrors how UnitedHealth/Optum works.
+
+5. SECURITY
+   Every employee sees only their own data (JWT-scoped).
+   Passwords are bcrypt hashed. No plain-text credentials.
+
+6. SCALABLE
+   NeonDB (serverless Postgres) scales automatically.
+   Adding new employees = just insert a row. No code change.
+
+Demo script:
+   "Log in as Yash Jain (52381857 / 1234HCLTECH) →
+    see his HSA balance, deductible progress, transaction history.
+    Now log in as Arpit Singh (52381896) → completely different
+    balances, family plan, different copay rates. Same app,
+    personalized per employee."
+
+
+TEST ACCOUNTS (all password: 1234HCLTECH)
+------------------------------------------
+  52381866  Ayush Parashar    Self-only HDHP
+  52381856  Satyam Sangal     Family PPO
+  52381857  Yash Jain         Self-only HDHP
+  52381854  Vandit Mittal     Self-only HDHP
+  52382046  Shreeya Agarwal   Family PPO
+  52381898  Mansi Prajapati   Self-only HDHP
+  52382051  Mansi Saini       Self-only HDHP
+  52381896  Arpit Singh       Family PPO
+  52381868  Anushka Srivastava Self-only HDHP
+
+
+FILES THAT MATTER
+-----------------
+  backend/main.py     → all API routes
+  backend/models.py   → DB schema (Employee, Wallet, Benefits, Transaction)
+  backend/auth.py     → JWT login, password hashing
+  backend/rules.py    → IRS 2026 HSA/FSA limits (the "rulebook")
+  backend/seed.py     → loads all 9 employees into DB
+  backend/database.py → connects to NeonDB (or SQLite fallback)
+
+  frontend/src/pages/Login.jsx        → login form
+  frontend/src/pages/Dashboard.jsx    → main wallet view
+  frontend/src/pages/Transactions.jsx → payment history
+  frontend/src/pages/Rules.jsx        → IRS rulebook display
+  frontend/src/api.js                 → all fetch calls to backend
