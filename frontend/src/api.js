@@ -32,13 +32,13 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ employee_id, password }),
     }),
-  getMember: () => request("/member"),
-  getWallet: () => request("/wallet"),
-  getBenefits: () => request("/benefits"),
-  getTransactions: () => request("/transactions"),
-  getRules: () => request("/rules"),
+  getMember: () => request("/api/member"),
+  getWallet: () => request("/api/wallet"),
+  getBenefits: () => request("/api/benefits"),
+  getTransactions: () => request("/api/transactions"),
+  getRules: () => request("/api/rules"),
   payCopay: (body) =>
-    request("/wallet/pay-copay", {
+    request("/api/wallet/pay-copay", {
       method: "POST",
       body: JSON.stringify(body),
     }),
