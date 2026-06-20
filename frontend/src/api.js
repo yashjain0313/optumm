@@ -28,7 +28,7 @@ async function request(path, options = {}) {
 
 export const api = {
   login: (employee_id, password) =>
-    request("/auth/login", {
+    request("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ employee_id, password }),
     }),
@@ -38,5 +38,8 @@ export const api = {
   getTransactions: () => request("/transactions"),
   getRules: () => request("/rules"),
   payCopay: (body) =>
-    request("/wallet/pay-copay", { method: "POST", body: JSON.stringify(body) }),
+    request("/wallet/pay-copay", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
 };
