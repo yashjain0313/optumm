@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { api } from "../api";
-import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
 export default function Login() {
@@ -9,8 +8,12 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+
+  // If already logged in, go to dashboard
+  if (localStorage.getItem("token")) {
+    return <Navigate to="/" replace />;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -18,7 +21,12 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await api.login(employeeId.trim().toUpperCase(), password);
-      login(data);
+      
+      // Save token directly
+      localStorage.setItem("token", data.access_token);
+      const emp = { employee_id: data.employee_id, name: data.name };
+      localStorage.setItem("employee", JSON.stringify(emp));
+
       navigate("/");
     } catch (err) {
       setError(err.message || "Login failed");

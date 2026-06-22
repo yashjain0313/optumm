@@ -1,13 +1,14 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Layout.css";
 
-export default function Layout() {
-  const { employee, logout } = useAuth();
+export default function Layout({ children }) {
   const navigate = useNavigate();
+  const employeeStr = localStorage.getItem("employee");
+  const employee = employeeStr ? JSON.parse(employeeStr) : null;
 
   function handleLogout() {
-    logout();
+    localStorage.removeItem("token");
+    localStorage.removeItem("employee");
     navigate("/login");
   }
 
@@ -42,7 +43,7 @@ export default function Layout() {
         </nav>
 
         <main className="content">
-          <Outlet />
+          {children}
         </main>
       </div>
     </div>

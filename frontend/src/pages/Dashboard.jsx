@@ -1,5 +1,7 @@
+import { Navigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
+import Layout from "../components/Layout";
 import "./Dashboard.css";
 
 function fmt(n) {
@@ -22,6 +24,8 @@ function Meter({ label, used, total }) {
 }
 
 export default function Dashboard() {
+  const isAuthenticated = !!localStorage.getItem("token");
+
   const [member, setMember] = useState(null);
   const [wallet, setWallet] = useState(null);
   const [benefits, setBenefits] = useState(null);
@@ -61,11 +65,13 @@ export default function Dashboard() {
     }
   }
 
-  if (loading) return <p className="page-loading">Loading account…</p>;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (loading) return <Layout><p className="page-loading">Loading account…</p></Layout>;
 
   return (
-    <div className="dashboard">
-      {notice && <div className="notice">{notice}</div>}
+    <Layout>
+      <div className="dashboard">
+        {notice && <div className="notice">{notice}</div>}
 
       <div className="page-head">
         <h2>Account overview</h2>
@@ -131,6 +137,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   );
 }
