@@ -1,25 +1,43 @@
-# Optum Member Benefits Wallet
+# Optum Benefits Wallet
 
-Employee-authenticated healthcare benefits wallet — HSA/FSA balances, deductible tracking, transactions, and US plan rules.
+An employee benefits portal where employees log in with their ID and password to view their HSA balance, Emergency Medical Fund, and transaction history. Benefits are tied to employee bands (E0–E5).
 
-## What's new (v2)
+**Stack:** React + FastAPI + SQLAlchemy + SQLite (local) / PostgreSQL (production)
 
-- **Auth:** Employee ID + password (JWT), each user sees their own data
-- **Database:** PostgreSQL via Neon (SQLite fallback for local dev)
-- **Rulebook:** IRS 2026 HSA/FSA limits + employer policy (`RULEBOOK.md`)
-- **UI:** Enterprise portal layout (sidebar, tables, no demo fluff)
+---
+
+## How it works
+
+- Employee logs in → gets a **JWT token**
+- Token is used on every API call to fetch **their own data only**
+- Benefits (monthly HSA, emergency fund) are determined by their **band (E0–E5)**
+
+| Band | Role | Monthly HSA | Emergency Fund |
+|------|------|-------------|----------------|
+| E0 | Intern | Rs 0 | Rs 0 (checkups only) |
+| E1 | Junior | Rs 1,000 | Rs 10,000 |
+| E2 | Mid-Level | Rs 2,000 | Rs 25,000 |
+| E3 | Senior | Rs 3,000 | Rs 50,000 |
+| E4 | Lead | Rs 4,000 | Rs 75,000 |
+| E5 | Executive | Rs 5,000 | Rs 1,00,000 |
 
 ---
 
 ## Test accounts
 
-| Employee ID | Name | Notes |
-|-------------|------|-------|
-| EMP-1001 | Alex Morgan | Self-only HDHP |
-| EMP-1002 | Jordan Lee | Family coverage |
-| EMP-1003 | Sam Rivera | Age 58, HSA catch-up eligible |
+Password for all: `1234HCLTECH`
 
-Password for all: `Optum@2026`
+| Employee ID | Name | Band |
+|-------------|------|------|
+| 52381866 | Ayush Parashar | E0 |
+| 52381856 | Satyam Sangal | E1 |
+| 52381857 | Yash Jain | E2 |
+| 52381854 | Vandit Mittal | E3 |
+| 52382046 | Shreeya Agarwal | E4 |
+| 52381898 | Mansi Prajapati | E5 |
+| 52382051 | Mansi Saini | E1 |
+| 52381896 | Arpit Singh | E2 |
+| 52381868 | Anushka Srivastava | E3 |
 
 ---
 
@@ -33,14 +51,13 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Optional: connect Neon (copy .env.example → .env)
-# cp .env.example .env
-
-python seed.py          # create tables + seed users
+python3 seed.py          # drops + recreates tables, seeds all employees
 uvicorn main:app --reload
 ```
 
-Without `DATABASE_URL`, SQLite file `optum_wallet.db` is used automatically.
+> **Note:** Always run `source venv/bin/activate` first. The system Python 3.13 has a known SQLAlchemy bug.
+
+Without `DATABASE_URL` in `.env`, it uses **SQLite** (`backend/optum_wallet.db`) automatically.
 
 ### Frontend
 
@@ -50,70 +67,30 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173/login**
+Open **http://localhost:5173**
 
 ---
 
-## NeonDB setup (when you have the key)
+## API endpoints
 
-1. Create a project at [neon.tech](https://neon.tech)
-2. Copy the connection string
-3. Create `backend/.env`:
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/login` | No | Login with employee ID + password |
+| GET | `/api/member` | Yes | Employee info (name, band, employer) |
+| GET | `/api/wallet` | Yes | HSA + Emergency Fund balances |
+| GET | `/api/benefits` | Yes | Monthly allowance + emergency limit |
+| GET | `/api/transactions` | Yes | Payment history |
+| POST | `/api/wallet/pay` | Yes | Deduct from HSA or Emergency Fund |
+
+---
+
+## Production (NeonDB)
+
+Create `backend/.env`:
 
 ```env
 DATABASE_URL=postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require
 JWT_SECRET=your-long-random-secret
-CORS_ORIGINS=http://localhost:5173,https://your-frontend-url.com
 ```
 
-4. Run seed:
-
-```bash
-cd backend && source venv/bin/activate
-python seed.py
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-
----
-
-## Deploy checklist
-
-| Layer | Suggestion |
-|-------|------------|
-| Database | Neon PostgreSQL |
-| Backend | Railway, Render, or Fly.io |
-| Frontend | Vercel or Netlify |
-| Env vars | `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS`, `VITE_API_URL` |
-
-Set `VITE_API_URL=https://your-api.com/api` when building the frontend.
-
----
-
-## API
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/api/auth/login` | No | Employee ID + password |
-| GET | `/api/member` | Yes | Profile |
-| GET | `/api/wallet` | Yes | Balances + limits |
-| GET | `/api/benefits` | Yes | Deductible, copays |
-| GET | `/api/transactions` | Yes | Transaction history |
-| GET | `/api/rules` | No | US healthcare rulebook |
-| POST | `/api/wallet/pay-copay` | Yes | Pay from HSA/FSA |
-
----
-
-## Presentation talking points
-
-1. **Problem:** Members use separate systems for benefits, HSA, and claims.
-2. **Solution:** Single authenticated wallet per employee.
-3. **Auth:** Employee ID + password → JWT; data scoped per user in Postgres.
-4. **Rules:** App follows IRS 2026 HSA limits ($4,400 self / $8,750 family) and employer minimums ($50/mo employee contribution).
-5. **Demo:** Log in as EMP-1001 vs EMP-1002 — different balances, plans, transactions.
-6. **Stack:** React (routes, auth context) + FastAPI + SQLAlchemy + Neon.
-
----
-
-## Rulebook
-
-See [`RULEBOOK.md`](RULEBOOK.md) for full US healthcare rules referenced by the app.
+Then run `python3 seed.py` once to populate the database.
