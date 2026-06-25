@@ -13,7 +13,7 @@ class LoginResponse(BaseModel):
     name: str
 
 
-class PayCopayRequest(BaseModel):
-    amount: float = Field(gt=0, le=500)
-    source: str = Field(pattern="^(HSA|FSA)$")
-    description: str = Field(default="Copay payment", max_length=120)
+class PayRequest(BaseModel):
+    amount: float = Field(gt=0, le=50000)
+    source: str = Field(pattern="^(HSA|Emergency Fund)$")
+    description: str = Field(default="Medical payment", max_length=120)

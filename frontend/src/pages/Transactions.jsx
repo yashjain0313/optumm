@@ -3,7 +3,11 @@ import { api } from "../api";
 import "./Transactions.css";
 
 function fmt(n) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Math.abs(n));
+  const format = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+  }).format(Math.abs(n));
+  return `Rs ${format.replace("₹", "")}`;
 }
 
 export default function Transactions() {

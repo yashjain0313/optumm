@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 function getToken() {
   return localStorage.getItem("token");
@@ -36,9 +36,8 @@ export const api = {
   getWallet: () => request("/api/wallet"),
   getBenefits: () => request("/api/benefits"),
   getTransactions: () => request("/api/transactions"),
-  getRules: () => request("/api/rules"),
-  payCopay: (body) =>
-    request("/api/wallet/pay-copay", {
+  pay: (body) =>
+    request("/api/wallet/pay", {
       method: "POST",
       body: JSON.stringify(body),
     }),

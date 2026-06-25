@@ -18,7 +18,7 @@ ACCESS_TOKEN_EXPIRE_HOURS = 8
 
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt(rounds=4)).decode()
 
 
 def verify_password(plain: str, hashed: str) -> bool:

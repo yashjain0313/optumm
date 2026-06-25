@@ -36,9 +36,6 @@ export default function Layout() {
           <NavLink to="/transactions" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
             Transactions
           </NavLink>
-          <NavLink to="/rules" className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
-            Plan Rules
-          </NavLink>
         </nav>
 
         <main className="content">
