@@ -67,20 +67,6 @@ export default function Login() {
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
-
-        <div className="login-help">
-          <p className="help-title">Test accounts (password: <code>1234HCLTECH</code>)</p>
-          <table>
-            <tbody>
-              <tr><td>52381866</td><td>Ayush Parashar</td><td>E0</td></tr>
-              <tr><td>52381856</td><td>Satyam Sangal</td><td>E1</td></tr>
-              <tr><td>52381857</td><td>Yash Jain</td><td>E2</td></tr>
-              <tr><td>52381854</td><td>Vandit Mittal</td><td>E3</td></tr>
-              <tr><td>52382046</td><td>Shreeya Agarwal</td><td>E4</td></tr>
-              <tr><td>52381898</td><td>Mansi Prajapati</td><td>E5</td></tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
