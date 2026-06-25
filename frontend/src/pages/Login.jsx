@@ -10,7 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // If already logged in, go to dashboard
+
   if (localStorage.getItem("token")) {
     return <Navigate to="/" replace />;
   }
@@ -22,7 +22,7 @@ export default function Login() {
     try {
       const data = await api.login(employeeId.trim().toUpperCase(), password);
       
-      // Save token directly
+
       localStorage.setItem("token", data.access_token);
       const emp = { employee_id: data.employee_id, name: data.name };
       localStorage.setItem("employee", JSON.stringify(emp));

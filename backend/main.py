@@ -2,6 +2,7 @@ import os
 from datetime import datetime, timezone
 
 from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel, Field
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -11,8 +12,22 @@ from auth import create_access_token, get_current_employee, verify_password
 from database import get_db
 from models import Employee, Transaction, Wallet
 from rules import FSA, get_rulebook, hsa_annual_limit, hsa_remaining_allowance, fsa_remaining_allowance
-from schemas import LoginRequest, LoginResponse, PayCopayRequest
 from seed import init_db
+
+class LoginRequest(BaseModel):
+    employee_id: str = Field(min_length=3, max_length=32)
+    password: str = Field(min_length=6, max_length=128)
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    employee_id: str
+    name: str
+
+class PayCopayRequest(BaseModel):
+    amount: float = Field(gt=0, le=500)
+    source: str = Field(pattern="^(HSA|FSA)$")
+    description: str = Field(default="Copay payment", max_length=120)
 
 app = FastAPI(
     title="Optum Member Benefits Wallet API",
