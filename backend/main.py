@@ -31,6 +31,13 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return LoginResponse(access_token=token, employee_id=employee.employee_id, name=employee.name)
 
 
+# ── Health check (public) ─────────────────────────────────────────────────────
+
+@app.get("/ping")
+def ping():
+    return {"status": "ok"}
+
+
 # ── Employee data (protected) ─────────────────────────────────────────────────
 
 @app.get("/api/member")
